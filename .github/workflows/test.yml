@@ -6,7 +6,6 @@ on:
 
   pull_request:
   push:
-env:
 
 jobs:
   test:
