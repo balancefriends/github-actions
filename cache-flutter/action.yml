@@ -1,0 +1,44 @@
+name: "Cache flutter"
+description: "Cache artifacts like dependencies and build outputs to improve workflow execution time"
+inputs:
+  pubspec:
+    description: 'cache pubspec'
+    required: false
+    default: 'true'
+  build_runner:
+    description: 'cache build_runner output'
+    required: false
+    default: 'true'    
+runs:
+  using: "composite"
+  steps:
+    - name: Cache pubspec dependencies
+      id: cache-pubspec
+      uses: actions/cache@v3
+      if: inputs.pubspec == 'true'
+      with:
+        path: |
+          ${{ env.FLUTTER_HOME }}/.pub-cache
+          **/.packages
+          **/.flutter-plugins
+          **/.flutter-plugin-dependencies
+          **/.dart_tool/package_config.json
+        key: build-pubspec-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          build-pubspec-
+    - name: Cache build runner
+      id: cache-build_runner
+      uses: actions/cache@v3
+      if: inputs.build_runner == 'true'
+      with:
+        path: |
+          **/.dart_tool
+          **/*.g.dart
+          **/*.mocks.dart
+          **/*.config.dart
+          **/*.freezed.dart
+          **/injector.config.dart
+          **.gr.dart
+        key: build-runner-${{ hashFiles('**/asset_graph.json', '**/*.dart', '**/pubspec.lock', '**/outputs.json') }}
+        restore-keys: |
+            build-runner-
