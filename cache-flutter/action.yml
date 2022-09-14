@@ -9,24 +9,44 @@ inputs:
     description: 'cache pubspec'
     required: false
     default: '**/pubspec.lock'    
-  pubcache:
+  pub-cache:
     description: ''
     required: false
     default: '/root/.pub-cache'
-  build_runner:
+  cache_build_runner:
     description: 'cache build_runner output'
     required: false
-    default: 'true'    
+    default: 'true'
+  cache_build_runner_path:
+    description: 'cache build_runner output'
+    required: false
+    default: |
+      **/.dart_tool
+      **/*.g.dart
+      **/*.mocks.dart
+      **/*.config.dart
+      **/*.freezed.dart
+      **/injector.config.dart
+      **.gr.dart      
 runs:
   using: "composite"
   steps:
+    - name: Check PUB_CACHE presence
+      id: check-pub-cache-env
+      shell: bash
+      run: |
+        if [ "$PUB_CACHE" == "" ]; then
+          echo ::set-output name=PUB_CACHE::${{ inputs.pub-cache }}
+        else
+          echo ::set-output name=PUB_CACHE::${{ env.PUB_CACHE }}
+        fi
     - name: Cache pubspec dependencies
       id: cache-pubspec
       uses: actions/cache@v3
       if: inputs.pubspec == 'true'
       with:
         path: |
-          ${{ inputs.pubcache }}
+          ${{ steps.check-pub-cache-env.outputs.PUB_CACHE }}
           **/.packages
           **/.flutter-plugins
           **/.flutter-plugin-dependencies
@@ -37,16 +57,9 @@ runs:
     - name: Cache build runner
       id: cache-build_runner
       uses: actions/cache@v3
-      if: inputs.build_runner == 'true'
+      if: inputs.cache_build_runner == 'true'
       with:
-        path: |
-          **/.dart_tool
-          **/*.g.dart
-          **/*.mocks.dart
-          **/*.config.dart
-          **/*.freezed.dart
-          **/injector.config.dart
-          **.gr.dart
+        path: {{ inputs.cache_build_runner_path }}
         key: build-runner-${{ hashFiles('**/asset_graph.json', '**/*.dart', inputs.pubspec-lock-file , '**/outputs.json') }}
         restore-keys: |
             build-runner-
