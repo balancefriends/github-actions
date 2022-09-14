@@ -8,7 +8,7 @@ inputs:
   pubcache:
     description: ''
     required: false
-    default: '~/.pubcache'
+    default: '/root/.pub-cache'
   build_runner:
     description: 'cache build_runner output'
     required: false
