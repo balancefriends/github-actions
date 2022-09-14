@@ -5,6 +5,10 @@ inputs:
     description: 'cache pubspec'
     required: false
     default: 'true'
+  pubcache:
+    description: ''
+    required: false
+    default: '~/.pubcache'
   build_runner:
     description: 'cache build_runner output'
     required: false
@@ -18,7 +22,7 @@ runs:
       if: inputs.pubspec == 'true'
       with:
         path: |
-          ${{ env.FLUTTER_HOME }}/.pub-cache
+          ${{ inputs.pubcache }}
           **/.packages
           **/.flutter-plugins
           **/.flutter-plugin-dependencies
