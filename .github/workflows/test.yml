@@ -18,9 +18,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: google/json_serializable.dart
+          path: json_serializable
+      - uses: actions/checkout@v3
       - uses: ./cache-flutter
       - run: flutter pub get
-        working-directory: example
+        working-directory: json_serializable/example
 
       - run: flutter pub run build_runner build --delete-conflicting-outputs
-        working-directory: example
+        working-directory: json_serializable/example
