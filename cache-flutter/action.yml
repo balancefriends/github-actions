@@ -5,6 +5,10 @@ inputs:
     description: 'cache pubspec'
     required: false
     default: 'true'
+  pubspec-lock-file:
+    description: 'cache pubspec'
+    required: false
+    default: '**/pubspec.lock'    
   pubcache:
     description: ''
     required: false
@@ -27,7 +31,7 @@ runs:
           **/.flutter-plugins
           **/.flutter-plugin-dependencies
           **/.dart_tool/package_config.json
-        key: build-pubspec-${{ hashFiles('**/pubspec.lock') }}
+        key: build-pubspec-${{ hashFiles( inputs.pubspec-lock-file ) }}
         restore-keys: |
           build-pubspec-
     - name: Cache build runner
@@ -43,6 +47,6 @@ runs:
           **/*.freezed.dart
           **/injector.config.dart
           **.gr.dart
-        key: build-runner-${{ hashFiles('**/asset_graph.json', '**/*.dart', '**/pubspec.lock', '**/outputs.json') }}
+        key: build-runner-${{ hashFiles('**/asset_graph.json', '**/*.dart', inputs.pubspec-lock-file , '**/outputs.json') }}
         restore-keys: |
             build-runner-
