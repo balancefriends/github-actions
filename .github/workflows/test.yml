@@ -1,0 +1,27 @@
+name: cache-test
+
+on:
+  workflow_dispatch:
+    # inputs:
+
+  pull_request:
+  push:
+env:
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    container: ghcr.io/amondnet/flutter:3.0.5
+    steps:
+      # https://github.com/actions/runner/issues/434#issuecomment-992865457
+      - name: Clean the workspace
+        run: rm -rf $GITHUB_WORKSPACE/*
+      - uses: actions/checkout@v3
+        with:
+          repository: google/json_serializable.dart
+      - uses: ./cache-flutter
+      - run: flutter pub get
+        working-directory: example
+
+      - run: flutter pub run build_runner build --delete-conflicting-outputs
+        working-directory: example
